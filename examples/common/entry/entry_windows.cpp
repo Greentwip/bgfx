@@ -476,7 +476,7 @@ namespace entry
 			wnd.lpfnWndProc = wndProc;
 			wnd.hInstance = instance;
 			wnd.hIcon = LoadIcon(NULL, IDI_APPLICATION);
-			wnd.hCursor = LoadCursor(NULL, IDC_ARROW);
+            wnd.hCursor = LoadCursor(instance, TEXT("NULL_CURSOR"));
 			wnd.lpszClassName = L"bgfx";
 			wnd.hIconSm = LoadIcon(NULL, IDI_APPLICATION);
 			RegisterClassExW(&wnd);
@@ -659,6 +659,10 @@ namespace entry
 				case WM_USER_WINDOW_MOUSE_LOCK:
 					setMouseLock(m_hwnd[_wparam], !!_lparam);
 					break;
+
+                case WM_SETCURSOR:
+                    SetCursor(NULL);
+                    break;
 
 				case WM_DESTROY:
 					break;
