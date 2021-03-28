@@ -23,6 +23,8 @@ namespace stl = tinystl;
 
 #include <bimg/decode.h>
 
+#include <string>
+
 void* load(bx::FileReaderI* _reader, bx::AllocatorI* _allocator, const char* _filePath, uint32_t* _size)
 {
 	if (bx::open(_reader, _filePath) )
@@ -160,6 +162,73 @@ static void imageReleaseCb(void* _ptr, void* _userData)
 	bimg::imageFree(imageContainer);
 }
 
+std::shared_ptr<TextureResource> loadMemoryTexture(std::string name,
+												   bgfx::TextureFormat::Enum format,
+											       long width,
+												   long height,
+												   long depth,
+												   bool cubeMap,
+											       bool hasMips,
+											       long flags,
+                                                   unsigned char *data)
+{
+
+	bgfx::TextureHandle handle = BGFX_INVALID_HANDLE;
+
+    auto imageContainer = bimg::imageAlloc(entry::getAllocator(),
+								static_cast<bimg::TextureFormat::Enum>(format),
+								width,
+								height,
+								depth,
+								1,
+								cubeMap,
+								hasMips,
+								data);
+
+	
+	const bgfx::Memory *mem =
+	bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, imageReleaseCb, imageContainer);
+
+    if (imageContainer->m_cubeMap)
+    {
+        handle = bgfx::createTextureCube(uint16_t(imageContainer->m_width), 1 < imageContainer->m_numMips,
+                                         imageContainer->m_numLayers,
+                                         bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
+    }
+    else if (1 < imageContainer->m_depth)
+    {
+        handle = bgfx::createTexture3D(uint16_t(imageContainer->m_width), uint16_t(imageContainer->m_height),
+                                       uint16_t(imageContainer->m_depth), 1 < imageContainer->m_numMips,
+                                       bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
+    }
+    else if (bgfx::isTextureValid(0, false, imageContainer->m_numLayers,
+                                  bgfx::TextureFormat::Enum(imageContainer->m_format), flags))
+    {
+        handle = bgfx::createTexture2D(uint16_t(imageContainer->m_width), uint16_t(imageContainer->m_height),
+                                       1 < imageContainer->m_numMips, imageContainer->m_numLayers,
+                                       bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
+    }
+
+    if (bgfx::isValid(handle))
+    {
+        bgfx::setName(handle, name.c_str());
+    }
+
+    auto resource = std::make_shared<TextureResource>(
+		TextureResource(
+			std::make_shared<bgfx::TextureHandle>(handle),
+			nullptr,
+			0,
+			0,
+			0,
+			false,
+			true,
+			RenderSize{imageContainer->m_width, imageContainer->m_height}));
+
+    return resource;
+}
+
+
 std::shared_ptr<TextureResource> loadTexture(bx::FileReaderI *_reader, const char *_filePath, uint64_t _flags, uint8_t _skip,
                             bgfx::TextureInfo *_info, bimg::Orientation::Enum *_orientation)
 {
@@ -243,9 +312,8 @@ std::shared_ptr<TextureResource> loadTexture(bx::FileReaderI *_reader, const cha
 			}
 
 				auto resource = std::make_shared<TextureResource>(
-                TextureResource{
-                std::make_shared<bgfx::TextureHandle>(handle),
-                RenderSize{imageContainer->m_width, imageContainer->m_height}});
+                TextureResource{std::make_shared<bgfx::TextureHandle>(handle), nullptr, 0, 0, 0, false, true,
+                                RenderSize{imageContainer->m_width, imageContainer->m_height}});
 
 				return resource;
 

@@ -15,6 +15,7 @@
 #include <tinystl/vector.h>
 
 #include <memory>
+#include <string>
 
 namespace stl = tinystl;
 
@@ -29,6 +30,20 @@ struct RenderSize
 struct TextureResource
 {
     std::shared_ptr<bgfx::TextureHandle> textureHandle;
+
+	explicit TextureResource(std::shared_ptr<bgfx::TextureHandle> _textureHandle, char *_name, unsigned long _hash,
+                             long _ref, uint32_t _dwSize, bool _isCubeMap, bool _loaded, RenderSize _size)
+        : textureHandle(_textureHandle), name(_name), hash(_hash), ref(_ref), dwSize(_dwSize), isCubeMap(_isCubeMap),
+          loaded(_loaded), size(_size)
+    {
+    }
+	char *name;
+    unsigned long hash;
+    long ref;
+    uint32_t dwSize;
+    bool isCubeMap;
+    bool loaded;
+
     RenderSize size;
 };
 
@@ -43,6 +58,13 @@ bgfx::ShaderHandle loadShader(const char* _name);
 
 ///
 bgfx::ProgramHandle loadProgram(const char* _vsName, const char* _fsName);
+
+///
+
+std::shared_ptr<TextureResource> loadMemoryTexture(std::string name, bgfx::TextureFormat::Enum format, long width,
+                                                   long height, long depth, bool cubeMap, bool hasMips, long flags,
+                                                   unsigned char *data);
+
 
 ///
 std::shared_ptr<TextureResource> loadTexture(const char *_name, uint64_t _flags = BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE,
