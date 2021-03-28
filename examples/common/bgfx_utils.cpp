@@ -160,7 +160,7 @@ static void imageReleaseCb(void* _ptr, void* _userData)
 	bimg::imageFree(imageContainer);
 }
 
-TextureResource loadTexture(bx::FileReaderI *_reader, const char *_filePath, uint64_t _flags, uint8_t _skip,
+std::shared_ptr<TextureResource> loadTexture(bx::FileReaderI *_reader, const char *_filePath, uint64_t _flags, uint8_t _skip,
                             bgfx::TextureInfo *_info, bimg::Orientation::Enum *_orientation)
 {
 	BX_UNUSED(_skip);
@@ -242,8 +242,8 @@ TextureResource loadTexture(bx::FileReaderI *_reader, const char *_filePath, uin
 					);
 			}
 
-				TextureResource resource = std::make_shared<TextureResourceStruct>(
-                TextureResourceStruct{
+				auto resource = std::make_shared<TextureResource>(
+                TextureResource{
                 std::make_shared<bgfx::TextureHandle>(handle),
                 RenderSize{imageContainer->m_width, imageContainer->m_height}});
 
@@ -255,7 +255,7 @@ TextureResource loadTexture(bx::FileReaderI *_reader, const char *_filePath, uin
     return nullptr;
 }
 
-TextureResource loadTexture(const char* _name, uint64_t _flags, uint8_t _skip, bgfx::TextureInfo* _info, bimg::Orientation::Enum* _orientation)
+std::shared_ptr<TextureResource> loadTexture(const char* _name, uint64_t _flags, uint8_t _skip, bgfx::TextureInfo* _info, bimg::Orientation::Enum* _orientation)
 {
 	return loadTexture(entry::getFileReader(), _name, _flags, _skip, _info, _orientation);
 }
