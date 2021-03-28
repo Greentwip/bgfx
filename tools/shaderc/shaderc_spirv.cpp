@@ -29,18 +29,18 @@ namespace bgfx
 	static bx::DefaultAllocator s_allocator;
 	bx::AllocatorI* g_allocator = &s_allocator;
 
-	struct TinyStlAllocator
+	struct SpirvTinyStlAllocator
 	{
 		static void* static_allocate(size_t _bytes);
 		static void static_deallocate(void* _ptr, size_t /*_bytes*/);
 	};
 
-	void* TinyStlAllocator::static_allocate(size_t _bytes)
+	void *SpirvTinyStlAllocator::static_allocate(size_t _bytes)
 	{
 		return BX_ALLOC(g_allocator, _bytes);
 	}
 
-	void TinyStlAllocator::static_deallocate(void* _ptr, size_t /*_bytes*/)
+	void SpirvTinyStlAllocator::static_deallocate(void *_ptr, size_t /*_bytes*/)
 	{
 		if (NULL != _ptr)
 		{
@@ -49,7 +49,7 @@ namespace bgfx
 	}
 } // namespace bgfx
 
-#define TINYSTL_ALLOCATOR bgfx::TinyStlAllocator
+#define TINYSTL_ALLOCATOR bgfx::SpirvTinyStlAllocator
 #include <tinystl/allocator.h>
 #include <tinystl/string.h>
 #include <tinystl/unordered_map.h>

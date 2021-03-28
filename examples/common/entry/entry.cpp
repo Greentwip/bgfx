@@ -24,8 +24,6 @@ namespace entry
 {
 	static uint32_t s_debug = BGFX_DEBUG_NONE;
 	static uint32_t s_reset = BGFX_RESET_NONE;
-	static uint32_t s_width = ENTRY_DEFAULT_WIDTH;
-	static uint32_t s_height = ENTRY_DEFAULT_HEIGHT;
 	static bool s_exit = false;
 
 	static bx::FileReaderI* s_fileReader = NULL;

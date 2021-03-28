@@ -37,6 +37,9 @@ extern "C" int _main_(int _argc, char** _argv);
 
 namespace entry
 {
+	static uint32_t s_width = 1920;
+	static uint32_t s_height = 1080;
+
 	struct WindowHandle  { uint16_t idx; };
 	inline bool isValid(WindowHandle _handle)  { return UINT16_MAX != _handle.idx; }
 

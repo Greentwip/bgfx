@@ -13,8 +13,26 @@
 
 #include <tinystl/allocator.h>
 #include <tinystl/vector.h>
+
+#include <memory>
+
 namespace stl = tinystl;
 
+
+struct RenderSize
+{
+    uint32_t width;
+    uint32_t height;
+};
+
+
+struct TextureResourceStruct
+{
+    std::shared_ptr<bgfx::TextureHandle> textureHandle;
+    RenderSize size;
+};
+
+typedef std::shared_ptr<TextureResourceStruct> TextureResource;
 
 ///
 void* load(const char* _filePath, uint32_t* _size = NULL);
@@ -29,7 +47,9 @@ bgfx::ShaderHandle loadShader(const char* _name);
 bgfx::ProgramHandle loadProgram(const char* _vsName, const char* _fsName);
 
 ///
-bgfx::TextureHandle loadTexture(const char* _name, uint64_t _flags = BGFX_TEXTURE_NONE|BGFX_SAMPLER_NONE, uint8_t _skip = 0, bgfx::TextureInfo* _info = NULL, bimg::Orientation::Enum* _orientation = NULL);
+TextureResource loadTexture(const char *_name, uint64_t _flags = BGFX_TEXTURE_NONE | BGFX_SAMPLER_NONE,
+                            uint8_t _skip = 0, bgfx::TextureInfo *_info = NULL,
+                            bimg::Orientation::Enum *_orientation = NULL);
 
 ///
 bimg::ImageContainer* imageLoad(const char* _filePath, bgfx::TextureFormat::Enum _dstFormat);

@@ -50,28 +50,9 @@ void printError(FILE* file, const char* format, ...)
 #include "../../bgfx/tools/shaderc/shaderc_glsl.cpp"
 //#define static_allocate static_allocate_shaderc
 //#define static_deallocate static_deallocate_shaderc
-//#include "../../bgfx/tools/shaderc/shaderc_spirv.cpp"
-//#include "../../bgfx/tools/shaderc/shaderc_pssl.cpp"
-
-namespace bgfx 
-{
-    bool compilePSSLShader(const Options&, uint32_t, const std::string&, bx::WriterI*)
-    {
-        return false;
-    }
-
-    bool compileSPIRVShader(const Options&, uint32_t, const std::string&, bx::WriterI*)
-    {
-        return false;
-    }
-
-    const char* getPsslPreamble()
-    {
-        return "";
-    }
-}
-
-
+#include "../../bgfx/tools/shaderc/shaderc_spirv.cpp"
+#include "../../bgfx/tools/shaderc/shaderc_pssl.cpp"
+#include "../../bgfx/tools/shaderc/shaderc_metal.cpp"
 
 #include "brtshaderc.h"
 using namespace bgfx;
