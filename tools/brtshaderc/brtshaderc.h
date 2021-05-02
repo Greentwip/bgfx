@@ -1,3 +1,6 @@
+#ifndef BRTSHADER_H
+#define BRTSHADER_H
+
 namespace shaderc
 {
     enum ShaderType
@@ -36,3 +39,5 @@ namespace shaderc
     const bgfx::Memory* compileShader(int argc, const char* argv[]);
 
 }
+
+#endif

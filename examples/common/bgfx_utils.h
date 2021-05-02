@@ -62,7 +62,7 @@ bgfx::ProgramHandle loadProgram(const char* _vsName, const char* _fsName);
 ///
 
 std::shared_ptr<TextureResource> loadMemoryTexture(std::string name, bgfx::TextureFormat::Enum format, long width,
-                                                   long height, long depth, bool cubeMap, bool hasMips, long flags,
+                                                   long height, long depth, bool cubeMap, bool hasMips, uint64_t flags,
                                                    unsigned char *data);
 
 
