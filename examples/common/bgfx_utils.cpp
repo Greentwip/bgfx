@@ -258,57 +258,80 @@ std::shared_ptr<TextureResource> loadMemoryTexture(std::string name, bgfx::Textu
 
 	bgfx::TextureHandle handle = BGFX_INVALID_HANDLE;
 
-    auto imageContainer = bimg::imageAlloc(entry::getAllocator(),
-								static_cast<bimg::TextureFormat::Enum>(format),
-								width,
-								height,
-								depth,
-								1,
-								cubeMap,
-								hasMips,
-								data);
-
-	
-	const bgfx::Memory *mem =
-	bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, imageReleaseCb, imageContainer);
-
-    if (imageContainer->m_cubeMap)
+	if (data != nullptr)
     {
-        handle = bgfx::createTextureCube(uint16_t(imageContainer->m_width), 1 < imageContainer->m_numMips,
-                                         imageContainer->m_numLayers,
-                                         bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
-    }
-    else if (1 < imageContainer->m_depth)
-    {
-        handle = bgfx::createTexture3D(uint16_t(imageContainer->m_width), uint16_t(imageContainer->m_height),
-                                       uint16_t(imageContainer->m_depth), 1 < imageContainer->m_numMips,
-                                       bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
-    }
-    else if (bgfx::isTextureValid(0, false, imageContainer->m_numLayers,
-                                  bgfx::TextureFormat::Enum(imageContainer->m_format), flags))
-    {
-        handle = bgfx::createTexture2D(uint16_t(imageContainer->m_width), uint16_t(imageContainer->m_height),
-                                       1 < imageContainer->m_numMips, imageContainer->m_numLayers,
-                                       bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
-    }
+        auto imageContainer = bimg::imageAlloc(entry::getAllocator(), static_cast<bimg::TextureFormat::Enum>(format),
+                                               width, height, depth, 1, cubeMap, hasMips, data);
 
-    if (bgfx::isValid(handle))
+        const bgfx::Memory *mem =
+            bgfx::makeRef(imageContainer->m_data, imageContainer->m_size, imageReleaseCb, imageContainer);
+
+        if (imageContainer->m_cubeMap)
+        {
+            handle = bgfx::createTextureCube(uint16_t(imageContainer->m_width), 1 < imageContainer->m_numMips,
+                                             imageContainer->m_numLayers,
+                                             bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
+        }
+        else if (1 < imageContainer->m_depth)
+        {
+            handle = bgfx::createTexture3D(uint16_t(imageContainer->m_width), uint16_t(imageContainer->m_height),
+                                           uint16_t(imageContainer->m_depth), 1 < imageContainer->m_numMips,
+                                           bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
+        }
+        else if (bgfx::isTextureValid(0, false, imageContainer->m_numLayers,
+                                      bgfx::TextureFormat::Enum(imageContainer->m_format), flags))
+        {
+            handle = bgfx::createTexture2D(uint16_t(imageContainer->m_width), uint16_t(imageContainer->m_height),
+                                           1 < imageContainer->m_numMips, imageContainer->m_numLayers,
+                                           bgfx::TextureFormat::Enum(imageContainer->m_format), flags, mem);
+        }
+
+        if (bgfx::isValid(handle))
+        {
+            bgfx::setName(handle, name.c_str());
+        }
+
+        auto resource = std::make_shared<TextureResource>(
+            TextureResource(std::make_shared<bgfx::TextureHandle>(handle), nullptr, 0, 0, 0, false, true,
+                            RenderSize{imageContainer->m_width, imageContainer->m_height}));
+
+        return resource;
+	}
+    else
     {
-        bgfx::setName(handle, name.c_str());
-    }
+        if (cubeMap)
+        {
+            handle = bgfx::createTextureCube(uint16_t(width), hasMips,
+                                             1,
+                                             bgfx::TextureFormat::Enum(format), flags, nullptr);
+        }
+        else if (1 < depth)
+        {
+            handle = bgfx::createTexture3D(uint16_t(width), uint16_t(height),
+                                           uint16_t(depth), hasMips,
+                                           bgfx::TextureFormat::Enum(format), flags, nullptr);
+        }
+        else if (bgfx::isTextureValid(0, false, 1,
+                                      bgfx::TextureFormat::Enum(format), flags))
+        {
+            handle = bgfx::createTexture2D(uint16_t(width), uint16_t(height),
+                                           hasMips, 1,
+                                           bgfx::TextureFormat::Enum(format), flags, nullptr);
+        }
 
-    auto resource = std::make_shared<TextureResource>(
-		TextureResource(
-			std::make_shared<bgfx::TextureHandle>(handle),
-			nullptr,
-			0,
-			0,
-			0,
-			false,
-			true,
-			RenderSize{imageContainer->m_width, imageContainer->m_height}));
+        if (bgfx::isValid(handle))
+        {
+            bgfx::setName(handle, name.c_str());
+        }
 
-    return resource;
+        auto resource = std::make_shared<TextureResource>(
+            TextureResource(std::make_shared<bgfx::TextureHandle>(handle), nullptr, 0, 0, 0, false, true,
+                            RenderSize{static_cast<unsigned int>(width), static_cast<unsigned int>(height)}));
+
+        return resource;
+	}
+
+    
 }
 
 
