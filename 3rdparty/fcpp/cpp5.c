@@ -242,6 +242,8 @@ ReturnCode fpp_eval(struct Global *global, int *eval)
   OPTAB opstack[NEXP];	/* Operand stack		*/
   ReturnCode ret;
   char again=FPP_TRUE;
+
+  int valpCounter = 0;
   
   valp = value;
   opp = opstack;
@@ -273,6 +275,7 @@ ReturnCode fpp_eval(struct Global *global, int *eval)
 	return(FPP_OK);
       } else {
 	*valp++ = global->evalue;
+  valpCounter++;
 	binop = 1;
       }
       again=FPP_TRUE;
@@ -307,7 +310,15 @@ ReturnCode fpp_eval(struct Global *global, int *eval)
 	}
 	opp->op = op;
 	opp->prec = prec;
-	skip = (valp[-1] != 0);         /* Short-circuit tester */
+  
+  if (valpCounter == 0)
+  {
+      skip = 1;  
+  }
+  else
+  {
+      skip = valp[-1] != 0;
+  }
 	/*
 	 * Do the short-circuit stuff here.  Short-circuiting
 	 * stops automagically when operators are evaluated.
